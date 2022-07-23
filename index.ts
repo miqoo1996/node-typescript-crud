@@ -28,7 +28,7 @@ app.get('/user', optionalName, FirstErrorCheckMiddleware, async (req: Request, r
     res.json( await userService.findUserByFullName(req.body.name || "") );
 });
 
-app.post('/user', userFields, FirstErrorCheckMiddleware, async (req: express.Request, res: express.Response) => {
+app.post('/user', userFields, FirstErrorCheckMiddleware, async (req: Request, res: Response) => {
         const userService = new UserService();
 
         await userService.saveUser(req.body);
@@ -37,7 +37,7 @@ app.post('/user', userFields, FirstErrorCheckMiddleware, async (req: express.Req
     },
 );
 
-app.put('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: express.Request, res: express.Response) => {
+app.put('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: Request, res: Response) => {
         const userService = new UserService();
 
         await userService.saveUser({
@@ -49,7 +49,7 @@ app.put('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: express.
     },
 );
 
-app.delete('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: express.Request, res: express.Response) => {
+app.delete('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: Request, res: Response) => {
         const userService = new UserService();
 
         await userService.deleteById(req.params.id);
