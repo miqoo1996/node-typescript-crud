@@ -1,4 +1,4 @@
-import {Like, Repository} from "typeorm";
+import {DeleteResult, Like, Repository} from "typeorm";
 import { AppDataSource } from "../data-source";
 import {User} from "../entity/User";
 
@@ -44,5 +44,9 @@ export class UserService {
         user.age = data.age;
 
         return await this.userRepository.save(user)
+    }
+
+    public async deleteById(id: string) : Promise<DeleteResult> {
+        return await this.userRepository.delete({id: parseInt(id)})
     }
 }

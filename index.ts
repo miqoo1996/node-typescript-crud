@@ -49,6 +49,15 @@ app.put('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: express.
     },
 );
 
+app.delete('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: express.Request, res: express.Response) => {
+        const userService = new UserService();
+
+        await userService.deleteById(req.params.id);
+
+        return res.json({ message: "deleted!" })
+    },
+);
+
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
