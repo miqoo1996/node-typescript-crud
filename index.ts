@@ -49,7 +49,7 @@ app.put('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: Request,
     },
 );
 
-app.delete('/user/:id', userFields, FirstErrorCheckMiddleware, async (req: Request, res: Response) => {
+app.delete('/user/:id', async (req: Request, res: Response) => {
         const userService = new UserService();
 
         await userService.deleteById(req.params.id);
