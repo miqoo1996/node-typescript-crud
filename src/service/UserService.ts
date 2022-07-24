@@ -21,7 +21,10 @@ export class UserService {
     }
 
     public async findUserByFirstName(firstName: string) : Promise<User[]> {
-        return await this.userRepository.findBy({firstName: Like(`%${firstName}%`)})
+        return await this.userRepository.find({
+            where: {firstName: Like(`%${firstName}%`)},
+            order: {id: 'DESC'}
+        })
     }
 
     public async findUserByFullName(name: string) : Promise<User[]> {
@@ -29,6 +32,7 @@ export class UserService {
             .createQueryBuilder('u')
             .select('u')
             .where(`CONCAT(u.firstName, ' ', u.lastName) like :name`, {name: `%${name}%`})
+            .orderBy({id: 'DESC'})
             .getMany()
     }
 

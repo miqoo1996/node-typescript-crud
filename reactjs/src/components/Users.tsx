@@ -8,12 +8,21 @@ import {
     GridRenderCellParams,
     GridValueGetterParams
 } from '@mui/x-data-grid';
-import {UsersStoreInterface} from '../stoeMobX/UsersStore';
+import {UsersStoreInterface, UserType} from '../stoeMobX/UsersStore';
 import {SyntheticEvent, useContext, useEffect, useState} from "react";
 import {AppContext} from "../contexts/AppContext";
 import Button from '@mui/material/Button';
 import {GridSelectionModel} from "@mui/x-data-grid/models/gridSelectionModel";
 import {GridCallbackDetails} from "@mui/x-data-grid/models/api";
+import styled from "styled-components";
+import UserFormDialog from "./UserFormDialog";
+
+const ButtonActionsWrapper = styled.div`
+    display: flex;
+    column-gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: ${({bottom}: {bottom?: any}) => bottom | 0}px;
+`;
 
 interface usersProp {
     store: UsersStoreInterface,
@@ -25,6 +34,8 @@ const Users = ({store}: usersProp) => {
     const { apiUrl } = useContext(AppContext);
 
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
+    const [open, setOpen] = React.useState<boolean>(false);
 
     const getRow = (params:  GridRenderCellParams): Record<string, GridCellValue> => {
         const api: GridApi = params.api;
@@ -55,9 +66,21 @@ const Users = ({store}: usersProp) => {
 
         const row = getRow(params);
 
-        alert(row.id)
+        setOpen(true);
+
+        store.setSelectedUser(row as UserType);
 
         return JSON.stringify(row, null, 4);
+    };
+
+    const handleClickOpenDialog = () => {
+        store.clearSelectedUser();
+
+        setOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpen(false);
     };
 
     useEffect(() => {
@@ -84,12 +107,12 @@ const Users = ({store}: usersProp) => {
                 field: "action",
                 headerName: "Action Buttons",
                 sortable: false,
-                width: 200,
+                width: 250,
                 renderCell: (params: GridRenderCellParams) => {
-                    return <>
-                        <Button onClick={e => handleDeleteClick(e, params)}>Delete</Button>
-                        <Button onClick={e => handleUpdateClick(e, params)}>Update</Button>
-                    </>;
+                    return <ButtonActionsWrapper>
+                        <Button color="error" variant='contained' onClick={e => handleDeleteClick(e, params)}>Delete</Button>
+                        <Button color="info" variant='contained' onClick={e => handleUpdateClick(e, params)}>Update</Button>
+                    </ButtonActionsWrapper>;
                 },
             }
         ];
@@ -102,11 +125,25 @@ const Users = ({store}: usersProp) => {
     }, []);
 
     const onSelectionChange = (selectionModel: GridSelectionModel, details: GridCallbackDetails) : void => {
-        console.log(selectionModel, details);
+        // console.log(selectionModel, details);
     };
 
     return (
         <div style={{ height: 800, width: '100%' }}>
+            <ButtonActionsWrapper bottom='10'>
+                <Button variant="outlined" onClick={handleClickOpenDialog}>
+                    Create
+                </Button>
+            </ButtonActionsWrapper>
+
+            <UserFormDialog
+                store={store}
+                open={open}
+                setOpen={setOpen}
+                handleClickOpenDialog={handleClickOpenDialog}
+                handleCloseDialog={handleCloseDialog}
+            />
+
             <DataGrid
                 rows={[...store.getUsers()]}
                 columns={columns}
