@@ -31,9 +31,9 @@ app.get('/user', optionalName, FirstErrorCheckMiddleware, async (req: Request, r
 app.post('/user', userFields, FirstErrorCheckMiddleware, async (req: Request, res: Response) => {
         const userService = new UserService();
 
-        await userService.saveUser(req.body);
+        const user = await userService.saveUser(req.body);
 
-        res.json({ message: "saved!", usersCount: await userService.getAllUsersCount() })
+        res.json({ message: "saved!", user, usersCount: await userService.getAllUsersCount() })
     },
 );
 

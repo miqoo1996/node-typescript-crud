@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {UsersStoreInterface} from "../stoeMobX/UsersStore";
+import {UsersStoreInterface, UserType} from "../stoeMobX/UsersStore";
 import {FormEvent, useContext, useRef} from "react";
 import {AppContext} from "../contexts/AppContext";
 import axios, {AxiosError} from "axios";
@@ -23,6 +23,7 @@ type UserFormDialogProps = {
 type SaveResponseType = {
     message?: string,
     usersCount?: number,
+    user?: UserType,
 };
 
 export default observer(function UserFormDialog({store, open, setOpen, handleCloseDialog} : UserFormDialogProps) {
@@ -51,11 +52,8 @@ export default observer(function UserFormDialog({store, open, setOpen, handleClo
             }
         } else {
             response = await axios.post(`${apiUrl}/user`, user).then(data => data.data).catch(onFormSaveFailure);
-            if (response) {
-                store.addUser({
-                    ...user,
-                    id: Math.random()
-                });
+            if (response.user) {
+                store.addUser(response.user);
             }
         }
 

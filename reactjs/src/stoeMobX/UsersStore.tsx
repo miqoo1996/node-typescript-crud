@@ -18,6 +18,8 @@ export interface UsersStoreInterface {
     getSelectedUser() : UserType
     clearSelectedUser(): void;
     deleteUser(id: number) : void
+    get usersActionList(): number[];
+    set usersActionList(value: number[]);
 }
 
 export default new class UsersStore implements UsersStoreInterface {
@@ -31,6 +33,8 @@ export default new class UsersStore implements UsersStoreInterface {
         age: 0,
     };
 
+    private _usersActionList: number[] = [];
+
     constructor() {
         makeAutoObservable(this);
     }
@@ -41,6 +45,14 @@ export default new class UsersStore implements UsersStoreInterface {
         const data = await axios.get(`${apiUrl}/user`);
 
         this.setUsers(data.data);
+    }
+
+    get usersActionList(): number[] {
+        return this._usersActionList;
+    }
+
+    set usersActionList(value: number[]) {
+        this._usersActionList = value;
     }
 
     public setUsers(users: UserType[]) : void {

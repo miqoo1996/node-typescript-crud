@@ -16,6 +16,7 @@ import {GridSelectionModel} from "@mui/x-data-grid/models/gridSelectionModel";
 import {GridCallbackDetails} from "@mui/x-data-grid/models/api";
 import styled from "styled-components";
 import UserFormDialog from "./UserFormDialog";
+import axios from "axios";
 
 const ButtonActionsWrapper = styled.div`
     display: flex;
@@ -73,13 +74,23 @@ const Users = ({store}: usersProp) => {
         return JSON.stringify(row, null, 4);
     };
 
-    const handleClickOpenDialog = () => {
+    const handleClickOpenDialog = () : void => {
         store.clearSelectedUser();
 
         setOpen(true);
     };
 
-    const handleCloseDialog = () => {
+    const handleDeleteAll = () : void => {
+        store.setUsers(store.getUsers().filter(user => store.usersActionList.indexOf(user.id as number) === -1));
+
+        store.usersActionList.map((userId: number) : void => {
+            axios.delete(`${apiUrl}/user/${userId}`);
+        });
+
+        store.usersActionList = [];
+    };
+
+    const handleCloseDialog = () : void => {
         setOpen(false);
     };
 
@@ -125,7 +136,7 @@ const Users = ({store}: usersProp) => {
     }, []);
 
     const onSelectionChange = (selectionModel: GridSelectionModel, details: GridCallbackDetails) : void => {
-        // console.log(selectionModel, details);
+        store.usersActionList = selectionModel as number[];
     };
 
     return (
@@ -134,6 +145,11 @@ const Users = ({store}: usersProp) => {
                 <Button variant="outlined" onClick={handleClickOpenDialog}>
                     Create
                 </Button>
+                {store.usersActionList.length ? (
+                    <Button variant="outlined" color='error' onClick={handleDeleteAll}>
+                        Delete all
+                    </Button>
+                ) : null}
             </ButtonActionsWrapper>
 
             <UserFormDialog
